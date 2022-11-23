@@ -1,4 +1,4 @@
-package com.hcc.test;
+package com.hcc.reggie;
 
 import org.junit.jupiter.api.Test;
 

@@ -553,7 +553,7 @@
           supportsPassive = true;
         }
       })); // https://github.com/facebook/flow/issues/285
-      window.addEventListener('test-passive', null, opts);
+      window.addEventListener('reggie-passive', null, opts);
     } catch (e) {}
   }
 
@@ -7204,12 +7204,12 @@
    *
    * Possible cases:
    *
-   * - test
-   * - test[key]
-   * - test[test1[key]]
-   * - test["a"][key]
-   * - xxx.test[a[a].test1[key]]
-   * - test.xxx.a["asa"][test1[key]]
+   * - reggie
+   * - reggie[key]
+   * - reggie[test1[key]]
+   * - reggie["a"][key]
+   * - xxx.reggie[a[a].test1[key]]
+   * - reggie.xxx.a["asa"][test1[key]]
    *
    */
 
