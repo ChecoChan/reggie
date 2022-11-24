@@ -13,6 +13,8 @@ import com.hcc.reggie.service.SetmealService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,6 +34,8 @@ public class SetmealController {
 
     /** 新增套餐 */
     @PostMapping
+    // 清除 setmealCache 缓存下的所有数据
+    @CacheEvict(value = "setmealCache", allEntries = true)
     public R<String> save(@RequestBody SetmealDto setmealDto) {
         log.info("新增套餐：{}", setmealDto.toString());
         setmealService.saveWithDish(setmealDto);
@@ -68,14 +72,29 @@ public class SetmealController {
 
     /** 删除套餐 */
     @DeleteMapping
+    // 清除 setmealCache 缓存下的所有数据
+    @CacheEvict(value = "setmealCache", allEntries = true)
     public R<String> delete(@RequestParam List<Long> ids) {
         log.info("删除套餐：{}", ids);
         setmealService.deleteWithDish(ids);
         return R.success("删除套餐成功");
     }
 
-    /** 根据条件查询对应分类菜品信息 */
+    /*
     @GetMapping("/list")
+    public R<List<SetmealDto>> list(Setmeal setmeal) {
+        LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(setmeal.getCategoryId() != null, Setmeal::getCategoryId, setmeal.getCategoryId());
+        // 状态 1 是起售，状态 0 是停售
+        queryWrapper.eq(Setmeal::getStatus, 1);
+        List<Setmeal> setmealList = setmealService.list(queryWrapper);
+        List<SetmealDto> setmealDtoList = getSetmealDto(setmealList);
+        return R.success(setmealDtoList);
+    }
+     */
+    /** 根据条件查询对应分类菜品信息，使用 Spring Cache */
+    @GetMapping("/list")
+    @Cacheable(value = "setmealCache", key = "#setmeal.categoryId + '_' + #setmeal.status")
     public R<List<SetmealDto>> list(Setmeal setmeal) {
         LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(setmeal.getCategoryId() != null, Setmeal::getCategoryId, setmeal.getCategoryId());

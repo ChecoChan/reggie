@@ -20,6 +20,9 @@ spring:
         max-wait: 1ms
         max-idle: 4
         min-idle: 0
+  cache:
+    redis:
+      time-to-live: 1800000 # 1800000ms = 1800s = 30min
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
