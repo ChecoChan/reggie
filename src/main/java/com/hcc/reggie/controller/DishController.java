@@ -15,9 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -30,6 +32,8 @@ public class DishController {
     private DishFlavorService dishFlavorService;
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /** 新增菜品 */
     @PostMapping
@@ -99,6 +103,11 @@ public class DishController {
     public R<String> update(@RequestBody DishDto dishDto) {
         log.info(dishDto.toString());
         dishService.updateWithFlavor(dishDto);
+
+        // 清理被更新菜品的 Redis 缓存
+        String key = "dish_" + dishDto.getCategoryId() + "_1";
+        redisTemplate.delete(key);
+
         return R.success("修改成功");
     }
 
@@ -138,8 +147,7 @@ public class DishController {
         return R.success(dishList);
     }
     */
-
-    /** 根据条件查询对应的菜品数据 */
+    /*
     @GetMapping("/list")
     public R<List<DishDto>> list(Dish dish) {
         LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
@@ -149,6 +157,33 @@ public class DishController {
         queryWrapper.orderByAsc(Dish::getSort).orderByDesc(Dish::getUpdateTime);
         List<Dish> dishList = dishService.list(queryWrapper);
         List<DishDto> dtoDishList = getDishDto(dishList);
+        return R.success(dtoDishList);
+    }
+     */
+    /** 根据条件查询对应的菜品数据，添加 Redis 缓存 */
+    @GetMapping("/list")
+    public R<List<DishDto>> list(Dish dish) {
+        List<DishDto> dtoDishList = null;
+        // 动态构造 key
+        String key = "dish_" + dish.getCategoryId() + "_" + dish.getStatus();
+
+        // 从 Redis 中获取缓存数据
+        dtoDishList = (List<DishDto>) redisTemplate.opsForValue().get(key);
+
+        // 如果 Redis 不存在数据，需要查数据库，并将结果缓存到 Redis
+        if (dtoDishList == null) {
+            LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(dish.getCategoryId() != null, Dish::getCategoryId, dish.getCategoryId());
+            // 状态 1 是起售，状态 0 是停售
+            queryWrapper.eq(Dish::getStatus, 1);
+            queryWrapper.orderByAsc(Dish::getSort).orderByDesc(Dish::getUpdateTime);
+            List<Dish> dishList = dishService.list(queryWrapper);
+            dtoDishList = getDishDto(dishList);
+            // 将数据库查询到的数据缓存到 Redis，过期时间是 60 分钟
+            redisTemplate.opsForValue().set(key, dtoDishList, 60, TimeUnit.MINUTES);
+        }
+
+        // 返回结果
         return R.success(dtoDishList);
     }
 
