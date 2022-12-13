@@ -23,16 +23,15 @@ public class LoginCheckFilter implements Filter {
     // 路径匹配器，支持通配符
     public static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
 
+    /**
+     * 1.获取本次请求 URI
+     * 2.判断本次请求是否需要处理
+     * 3.如果不需要处理，则直接放行
+     * 4.判断登录状态，如果已经登录，则直接放行
+     * 5.如果未登录则返回未登录
+     */
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        /**
-         * 1. 获取本次请求URI
-         * 2. 判断本次请求是否需要处理
-         * 3. 如果不需要处理，则直接放行
-         * 4. 判断登录状态，如果已经登录，则直接放行
-         * 5. 如果未登录则返回未登录
-         */
-
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         HttpSession session = request.getSession();
@@ -89,7 +88,7 @@ public class LoginCheckFilter implements Filter {
 
         // 5. 如果未登录则返回未登录
         log.info("用户未登录");
-        // 通过输出流的方式想客户端页面响应数据
+        // 通过输出流的方式向客户端页面响应数据
         response.getWriter().write(JSON.toJSONString(R.error("NOTLOGIN")));
     }
 
