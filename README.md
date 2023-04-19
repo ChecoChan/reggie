@@ -1,5 +1,5 @@
 # reggie
-瑞吉外卖
+Reggie Takeout
 
 
 # reggie
