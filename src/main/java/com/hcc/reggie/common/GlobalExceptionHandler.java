@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 /** 全局异常处理 */
-@ControllerAdvice(annotations = {RestController.class, Controller.class})
-@ResponseBody
 @Slf4j
+@ResponseBody
+@ControllerAdvice(annotations = {RestController.class, Controller.class})
 public class GlobalExceptionHandler {
     /** 数据库中已存在数据不能重复添加 */
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
