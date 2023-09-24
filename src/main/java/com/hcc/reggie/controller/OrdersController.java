@@ -39,4 +39,12 @@ public class OrdersController {
         ordersService.page(pageInfo, queryWrapper);
         return R.success(pageInfo);
     }
+
+    /** 用户查询订单接口 */
+    @GetMapping("/userPage")
+    public R<Page<Orders>> userPage(int page, int pageSize) {
+        Page<Orders> pageInfo = new Page<>();
+        ordersService.page(pageInfo);
+        return R.success(pageInfo);
+    }
 }
