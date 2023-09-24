@@ -105,21 +105,13 @@ public class EmployeeController {
 
     /** 员工分页查询 */
     @GetMapping("/page")
-    public R<Page> page(int page, int pageSize, String name) {
-        // 分页构造器
-        Page<Employee> pageInfo = new Page<>(page, pageSize);
-        // 条件构造器
-        LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper<>();
-
-        // 添加过滤条件
-        queryWrapper.like(StringUtils.isNotEmpty(name), Employee::getName, name);
-        // 添加排序条件
-        queryWrapper.orderByDesc(Employee::getUpdateTime);
-        // 执行查询
-        employeeService.page(pageInfo, queryWrapper);
-
-        // 返回结果
-        return R.success(pageInfo);
+    public R<Page<Employee>> page(int page, int pageSize, String name) {
+        Page<Employee> pageInfo = new Page<>(page, pageSize); // 分页构造器
+        LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper<>(); // 条件构造器
+        queryWrapper.like(StringUtils.isNotEmpty(name), Employee::getName, name); // 添加过滤条件
+        queryWrapper.orderByDesc(Employee::getUpdateTime); // 添加排序条件
+        employeeService.page(pageInfo, queryWrapper); // 执行查询
+        return R.success(pageInfo); // 返回结果
     }
 
     /** 根据 id 修改员工信息 */
