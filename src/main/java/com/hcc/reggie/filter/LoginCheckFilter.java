@@ -43,18 +43,12 @@ public class LoginCheckFilter implements Filter {
         // 2. 判断本次请求是否需要处理
         // 直接放行的请求页面
         String[] urls = new String[] {
-                // 后台资源页面
-                "/backend/**",
-                // 员工登入
-                "/employee/login",
-                // 员工等出
-                "/employee/logout",
-                // 移动端资源页面
-                "/front/**",
-                // 移动端发送短信
-                "/user/sendMsg",
-                // 移动端登录
-                "/user/login"
+                "/backend/**", // 后台资源页面
+                "/employee/login", // 员工登入
+                "/employee/logout", // 员工等出
+                "/front/**", // 移动端资源页面
+                "/user/sendMsg", // 移动端发送短信
+                "/user/login" // 移动端登录
         };
         boolean check = check(urls, requestURI);
 
