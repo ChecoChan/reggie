@@ -12,9 +12,14 @@ Reggie Takeout
 接入第三方支付即可满足日常使用，将应用打包并使用Docker部署即可运行
 
 ### 访问地址
-后台管理系统：在 [localhost:8080/backend/page/login/login.html](localhost:8080/backend/page/login/login.html)
+后台管理系统：在 [http://localhost:8080/backend/page/login/login.html](http://localhost:8080/backend/page/login/login.html)
+    
+- 默认账号：admin
+- 默认密码：123456
 
 用户端：在 [http://localhost:8080/front/page/login.html](http://localhost:8080/front/page/login.html)
+
+- 测试账号：13000000000
 
 #### 项目框架
 1. 前端：HTML + CSS + JavaScript + Vue.js + ElementUI
