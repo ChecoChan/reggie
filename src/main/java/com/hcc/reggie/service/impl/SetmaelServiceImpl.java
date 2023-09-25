@@ -3,13 +3,18 @@ package com.hcc.reggie.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hcc.reggie.common.CustomException;
+import com.hcc.reggie.common.R;
 import com.hcc.reggie.dto.DishDto;
 import com.hcc.reggie.dto.SetmealDto;
+import com.hcc.reggie.entity.Category;
+import com.hcc.reggie.entity.Dish;
 import com.hcc.reggie.entity.Setmeal;
 import com.hcc.reggie.entity.SetmealDish;
 import com.hcc.reggie.mapper.SetmealMapper;
+import com.hcc.reggie.service.CategoryService;
 import com.hcc.reggie.service.SetmealDishService;
 import com.hcc.reggie.service.SetmealService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +24,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class SetmaelServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> implements SetmealService {
+    @Autowired
+    private SetmealService setmealService;
+
+    @Autowired CategoryService categoryService;
+
     @Autowired
     private SetmealDishService setmealDishService;
 
@@ -56,5 +66,21 @@ public class SetmaelServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
         LambdaQueryWrapper<SetmealDish> dishLambdaQueryWrapper = new LambdaQueryWrapper<>();
         dishLambdaQueryWrapper.in(SetmealDish::getSetmealId, ids);
         setmealDishService.remove(dishLambdaQueryWrapper);
+    }
+
+    @Override
+    public R<SetmealDto> getByIdWithDish(String setmealId) {
+        Setmeal setmeal = setmealService.getById(setmealId);
+        if (setmeal == null)
+            return R.error("查询套餐数据不存在");
+        SetmealDto setmealDto = new SetmealDto();
+        BeanUtils.copyProperties(setmeal, setmealDto);
+        String categoryName = categoryService.getById(setmealDto.getCategoryId()).getName();
+        setmealDto.setCategoryName(categoryName);
+        LambdaQueryWrapper<SetmealDish> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SetmealDish::getSetmealId, setmealDto.getId());
+        List<SetmealDish> setmealDish = setmealDishService.list(queryWrapper);
+        setmealDto.setSetmealDishes(setmealDish);
+        return R.success(setmealDto);
     }
 }

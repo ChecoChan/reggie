@@ -129,4 +129,10 @@ public class SetmealController {
             return setmealDto;
         }).collect(Collectors.toList());
     }
+
+    /** 根据套餐 id 显示套餐信息 */
+    @GetMapping("/{id}")
+    public R<SetmealDto> getById(@PathVariable("id") String id) {
+        return setmealService.getByIdWithDish(id);
+    }
 }

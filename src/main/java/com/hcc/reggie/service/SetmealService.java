@@ -1,7 +1,7 @@
 package com.hcc.reggie.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.hcc.reggie.dto.DishDto;
+import com.hcc.reggie.common.R;
 import com.hcc.reggie.dto.SetmealDto;
 import com.hcc.reggie.entity.Setmeal;
 
@@ -13,4 +13,7 @@ public interface SetmealService extends IService<Setmeal> {
 
     /** 删除套餐，同时删除套餐关联的菜品信息 */
     void deleteWithDish(List<Long> ids);
+
+    /** 根据套餐 id 查询套餐关联菜品信息 */
+    R<SetmealDto> getByIdWithDish(String setmealId);
 }
