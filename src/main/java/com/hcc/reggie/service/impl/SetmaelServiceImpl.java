@@ -83,4 +83,22 @@ public class SetmaelServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
         setmealDto.setSetmealDishes(setmealDish);
         return R.success(setmealDto);
     }
+
+    @Override
+    public R<String> edit(SetmealDto setmealDto) {
+        Setmeal setmeal = setmealService.getById(setmealDto.getId());
+        setmeal.setName(setmealDto.getName());
+        setmeal.setCategoryId(setmealDto.getCategoryId());
+        setmeal.setPrice(setmealDto.getPrice());
+        setmeal.setDescription(setmealDto.getDescription());
+        setmeal.setImage(setmealDto.getImage());
+        setmealService.updateById(setmeal);
+
+        LambdaQueryWrapper<SetmealDish> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SetmealDish::getSetmealId, setmealDto.getId());
+        setmealDishService.remove(queryWrapper);
+        List<SetmealDish> setmealDishes = setmealDto.getSetmealDishes().stream().peek(item -> item.setSetmealId(setmealDto.getId())).collect(Collectors.toList());
+        setmealDishService.saveBatch(setmealDishes);
+        return R.success("修改成功");
+    }
 }

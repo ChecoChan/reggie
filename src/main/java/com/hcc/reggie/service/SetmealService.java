@@ -16,4 +16,7 @@ public interface SetmealService extends IService<Setmeal> {
 
     /** 根据套餐 id 查询套餐关联菜品信息 */
     R<SetmealDto> getByIdWithDish(String setmealId);
+
+    /** 修改套餐信息 */
+    R<String> edit(SetmealDto setmealDto);
 }

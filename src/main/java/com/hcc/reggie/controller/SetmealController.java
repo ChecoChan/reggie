@@ -3,6 +3,7 @@ package com.hcc.reggie.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hcc.reggie.common.R;
+import com.hcc.reggie.dto.DishDto;
 import com.hcc.reggie.dto.SetmealDto;
 import com.hcc.reggie.entity.Category;
 import com.hcc.reggie.entity.Setmeal;
@@ -134,5 +135,11 @@ public class SetmealController {
     @GetMapping("/{id}")
     public R<SetmealDto> getById(@PathVariable("id") String id) {
         return setmealService.getByIdWithDish(id);
+    }
+
+    /** 修改套餐 */
+    @PutMapping
+    public R<String> edit(@RequestBody SetmealDto setmealDto) {
+        return setmealService.edit(setmealDto);
     }
 }
