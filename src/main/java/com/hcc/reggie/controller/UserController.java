@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.hcc.reggie.common.R;
 import com.hcc.reggie.entity.User;
 import com.hcc.reggie.service.UserService;
+import com.hcc.reggie.utils.SMSUtils;
 import com.hcc.reggie.utils.ValidateCodeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -31,29 +31,16 @@ public class UserController {
     /** 发送手机验证码 */
     @PostMapping("/sendMsg")
     public R<String> sendMsg(HttpSession session, @RequestBody User user) {
-        // 获取手机号
-        String phone = user.getPhone();
-
-        // 手机号不为空
-        if (phone != null) {
-            // 生成随机的 4 位验证码
-            String code = ValidateCodeUtils.generateValidateCode(4).toString();
+        String phone = user.getPhone(); // 获取手机号
+        if (phone != null) { // 手机号不为空
+            String code = ValidateCodeUtils.generateValidateCode(4).toString();  // 生成随机的 4 位验证码
             log.info("验证码：code = {}", code);
-
-            // 调用阿里云提供的短信服务 API 完成短信发送
-            // SMSUtils.sendMessage("瑞吉外卖", "", phone, code);
-
-            // 将生成的验证码存储到 Session中
-            // session.setAttribute(phone, code);
-
-            // 将生成的验证码缓存到 Redis 中，并且设置有效期为 5 分钟
-            redisTemplate.opsForValue().set(phone, code, 5, TimeUnit.MINUTES);
-
+             // SMSUtils.sendMessage("外卖短信验证", "", phone, code); // 调用阿里云提供的短信服务 API 完成短信发送
+             // session.setAttribute(phone, code); // 将生成的验证码存储到 Session中
+            redisTemplate.opsForValue().set(phone, code, 5, TimeUnit.MINUTES); // 将生成的验证码缓存到 Redis 中，并且设置有效期为 5 分钟
             return R.success("验证码已发送");
         }
-
-        // 手机号为空
-        return R.success("短信发送失败");
+        return R.success("短信发送失败"); // 手机号为空
     }
 
     /**
