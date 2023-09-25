@@ -25,12 +25,9 @@ public class CommonController {
     /** 文件上传 */
     @PostMapping("/upload")
     public R<String> upload(MultipartFile file) {
-        // 原始文件名
-        String originalFilename = file.getOriginalFilename();
-        // 取出原始文件名后缀
-        String suffixName = originalFilename.substring(originalFilename.lastIndexOf("."));
-        // 使用 UUID 生成随机文件名
-        String fileName = UUID.randomUUID() + suffixName;
+        String originalFilename = file.getOriginalFilename(); // 原始文件名
+        String suffixName = originalFilename.substring(originalFilename.lastIndexOf("."));  // 取出原始文件名后缀
+        String fileName = UUID.randomUUID() + suffixName; // 使用 UUID 生成随机文件名
 
         // 判断配置文件中的目录是否存在，若不存在则创建
         File dir = new File(basePath);
@@ -50,23 +47,15 @@ public class CommonController {
     /** 文件下载 */
     @GetMapping("/download")
     public void download(String name, HttpServletResponse response) {
-        try {
-            // 创建输入流读入文件
-            FileInputStream fileInputStream = new FileInputStream(new File(basePath + name));
-            // 创建输出流给浏览器响应文件
-            ServletOutputStream outputStream = response.getOutputStream();
-            // 设置响应文件的类型
-            response.setContentType("image/jpeg");
-
+        try (FileInputStream fileInputStream = new FileInputStream(basePath + name);
+             ServletOutputStream outputStream = response.getOutputStream()) {
+            response.setContentType("image/jpeg"); // 设置响应文件的类型
             int len = 0;
             byte[] bytes = new byte[1024];
             while ((len = fileInputStream.read(bytes)) != -1) {
                 outputStream.write(bytes, 0, len);
                 outputStream.flush();
             }
-
-            outputStream.close();
-            fileInputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
