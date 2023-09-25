@@ -45,42 +45,31 @@ public class UserController {
 
     /**
      * 用户登录
-     *
      * @param session 会话
      * @param map 接收客户端传过来的 JSON 数据
      * @return 登录成功或失败
      */
     @PostMapping("/login")
     public R<User> login(HttpSession session, @RequestBody Map map) {
-        // 获取客户端传送的手机号和验证码
-        String phone = map.get("phone").toString();
-        String code = map.get("code").toString();
-        // 获取存储在 Session 中的验证码
-        // String realCode = session.getAttribute(phone).toString();
-        // 获取存储在 Redis 中的验证码
-        String realCode = redisTemplate.opsForValue().get(phone).toString();
-
-
-        if (code != null && code.equals(realCode)) {
-            // 判断为新用户则自动注册
+        String phone = map.get("phone").toString(); // 客户端传送的手机号
+        String code = map.get("code").toString(); // 客户端传送的验证码
+        // String realCode = session.getAttribute(phone).toString(); // 获取存储在 Session 中的验证码
+        String realCode = redisTemplate.opsForValue().get(phone).toString(); // 获取存储在 Redis 中的验证码
+        if (code != null && code.equals(realCode)) { // 验证码非空且正确
             LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(User::getPhone, phone);
             User user = userService.getOne(queryWrapper);
-            if (user == null) {
+            if (user == null) { // 判断为新用户则自动注册
                 user = new User();
                 user.setPhone(phone);
                 user.setStatus(1);
                 userService.save(user);
             }
-
-            // 登录成功，删除 Redis 缓存中的验证码，并返回成功
-            redisTemplate.delete(phone);
+            redisTemplate.delete(phone); // 登录成功，删除 Redis 缓存中的验证码，并返回成功
             session.setAttribute("user", user.getId());
             return R.success(user);
         }
-
-        // 验证码错误
-        return R.error("验证码错误");
+        return R.error("验证码错误"); // 验证码错误
     }
 
     /** 员工退出 */
