@@ -1,0 +1,38 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:8 # 使用镜像
+    container_name: reggie-mysql # 启动的容器名称
+    environment:
+      MYSQL_ROOT_PASSWORD: 20210928 # root 用户密码
+    ports:
+      - "3306:3306" # 端口映射
+    volumes:
+      - ./mysql-data:/var/lib/mysql # 将数据目录挂载到本地目录进行持久化
+      - ./mysql-init:/docker-entrypoint-initdb.d # 启动脚本
+    restart: always # 崩溃后重启
+    networks:
+      - mynetwork # 指定网络
+  redis:
+    image: redis:6
+    container_name: reggie-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis-data:/data
+    networks:
+      - mynetwork
+  reggie:
+    container_name: reggie-application
+    build: # 服务的 Docker 构建文件位置
+      context: ../reggie
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - mynetwork
+    depends_on:
+      - mysql
+      - redis
+networks:
+  mynetwork:
