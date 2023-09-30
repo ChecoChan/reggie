@@ -10,7 +10,7 @@ spring:
       username: root
       password: 20210928
   redis:
-    host: 192.168.126.131
+    host: localhost
     port: 6379
     # password: 123456
     database: 0
@@ -31,4 +31,4 @@ mybatis-plus:
     db-config:
       id-type: ASSIGN_ID
 reggie:
-  path: C:\IT\Java_Web_Projects\reggie\src\main\resources\img\
+  path: src/main/resources/img/
