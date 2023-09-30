@@ -14,7 +14,7 @@ Reggie Takeout
 ### 项目启动
 
 - 环境要求：Docker
-- 打包：`mvn clean install`
+- 打包：`mvn clean package`
 - 运行 [docker-compose.yml](https://github.com/ChecoChan/reggie/blob/master/docker-compose.yml) 一键启动项目
 
 ### 访问地址
