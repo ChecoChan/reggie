@@ -14,7 +14,7 @@ Reggie Takeout
 ### 项目启动
 
 - 环境要求：Docker
-- 运行 [docker-compose.yml](../reggie/docker-compose.yml) 一键启动项目
+- 运行 [docker-compose.yml](https://github.com/ChecoChan/reggie/blob/master/docker-compose.yml) 一键启动项目
 
 ### 访问地址
 后台管理系统：在 [http://localhost:8080/backend/page/login/login.html](http://localhost:8080/backend/page/login/login.html)
